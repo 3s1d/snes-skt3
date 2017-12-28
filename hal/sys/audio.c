@@ -15,6 +15,8 @@
 #include "../../snes2010/snes9x.h"
 #include "../../snes2010/apu.h"
 
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
 snd_pcm_t *pcm_handle = NULL;
 static const char *device = "default";						/* playback device */
 static const snd_pcm_access_t pcm_access = SND_PCM_ACCESS_RW_INTERLEAVED; 	/* PCM access type */
@@ -31,6 +33,8 @@ bool play_state = false;
 static snd_pcm_sframes_t buffer_size;
 static snd_pcm_sframes_t period_size;
 
+int16_t *sound_buffer = NULL;
+size_t sound_buffer_size = 0;
 
 int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params, snd_pcm_access_t access)
 {
@@ -151,96 +155,53 @@ int set_swparams(snd_pcm_t *handle, snd_pcm_sw_params_t *swparams)
 	return 0;
 }
 
-/*
- *   Underrun and suspend recovery
- */
-int xrun_recovery(snd_pcm_t *handle, int err)
-{
-	printf("stream recovery %d\n", err);
-
-	if (err == -EPIPE)
-	{ /* under-run */
-		err = snd_pcm_prepare(handle);
-		if (err < 0)
-			printf("Can't recovery from underrun, prepare failed: %s\n", snd_strerror(err));
-		return 0;
-	} else if (err == -ESTRPIPE)
-	{
-		while ((err = snd_pcm_resume(handle)) == -EAGAIN)
-			sleep(1); /* wait until the suspend flag is released */
-		if (err < 0)
-		{
-			err = snd_pcm_prepare(handle);
-			if (err < 0)
-				printf("Can't recovery from suspend, prepare failed: %s\n", snd_strerror(err));
-		}
-		return 0;
-	}
-	return err;
-}
-
 void sound_cb(void)
 {
-	/* Just pick a big buffer. We won't use it all. */
-	static int16_t audio_buf[0x20000];
+	S9xFinalizeSamples ();
 
-	S9xFinalizeSamples();
-	size_t avail = S9xGetSampleCount();
-	S9xMixSamples(audio_buf, avail);
-	avail /= 2;
-	for(int i=0; i<avail; i++)
-		audio_buf[i] = (int16_t) ((((int32_t)audio_buf[i*2])+((int32_t)audio_buf[i*2+1])) / 2);
+	snd_pcm_sframes_t frames = snd_pcm_avail_update (pcm_handle);
+	if (frames < 0)
+		frames = snd_pcm_recover (pcm_handle, frames, 1);
+
+	frames = MIN (frames, S9xGetSampleCount () >> 1);
+
+	if (sound_buffer_size < frames*4 || sound_buffer == NULL)
+	{
+		sound_buffer_size = frames*8;
+		sound_buffer = (int16_t *) realloc (sound_buffer, sound_buffer_size*sizeof(int16_t));
+	}
+
+	S9xMixSamples (sound_buffer, frames << 1);
+	for(int i=0; i<frames; i++)
+		sound_buffer[i] = (int16_t) ((((int32_t)sound_buffer[i*2])+((int32_t)sound_buffer[i*2+1])) / 2);
+
+	snd_pcm_sframes_t frames_written = 0;
+	while (frames_written < frames)
+	{
+		int result;
+
+		result = snd_pcm_writei (pcm_handle, sound_buffer + (frames_written<<1), frames - frames_written);
+
+		if (result < 0)
+		{
+			result = snd_pcm_recover (pcm_handle, result, 1);
+
+			if (result < 0)
+				break;
+		}
+		else
+		{
+			frames_written += result;
+		}
+	}
 
 	/* get state */
 	snd_pcm_state_t pcm_state = snd_pcm_state(pcm_handle);
-	//printf("s: %d\n", pcm_state);
-
-	if(pcm_state == SND_PCM_STATE_RUNNING || pcm_state == SND_PCM_STATE_PREPARED)
-	{
-		long asound_avail = snd_pcm_avail_update(pcm_handle);
-		if(asound_avail <= 0)
-		{
-			//printf("drop\n");
-			return;
-		}
-
-		if(avail > asound_avail)
-		{
-			//printf("limit\n");
-			avail = asound_avail;
-		}
-
-		//printf("as%d w%d\n", asound_avail, avail);
-		int err = snd_pcm_writei(pcm_handle, audio_buf, avail);
-		if (err < 0)
-		{
-			printf("Write error: %s\n", snd_strerror(err));
-			return;
-		}
-		if (err != avail)
-		{
-			printf("Write error: written %i expected %li\n", err, period_size);
-			return;
-		}
-	}
-
-	/* recovery */
-	if (pcm_state == SND_PCM_STATE_XRUN || pcm_state == SND_PCM_STATE_SUSPENDED)
-	{
-		int err = (pcm_state == SND_PCM_STATE_XRUN) ? -EPIPE : -ESTRPIPE;
-		if (xrun_recovery(pcm_handle, err) < 0)
-			return;
-		//pcm_state = snd_pcm_state(pcm_handle);
-	}
 
 	/* prepare */
 	if(pcm_state == SND_PCM_STATE_SETUP)
 	{
-		int err = snd_pcm_prepare(pcm_handle);
-		if (err < 0)
-		{
-		}
-
+		snd_pcm_prepare(pcm_handle);
 		pcm_state = snd_pcm_state(pcm_handle);
 	}
 
@@ -252,6 +213,8 @@ void sound_cb(void)
 			printf("Start error: %s\n", snd_strerror(err));
 		}
 	}
+
+	return;
 }
 
 
@@ -259,7 +222,6 @@ bool audio_init(void)
 {
 	snd_pcm_hw_params_t *hwparams;
 	snd_pcm_sw_params_t *swparams;
-	//snd_async_handler_t *ahandler;
 	int err;
 
 	/* set parameter */
@@ -296,14 +258,6 @@ bool audio_init(void)
 			Settings.SoundPlaybackRate, snd_pcm_format_name(format), pcm_channels);
 	snd_pcm_dump(pcm_handle, output);
 
-//	if ((err = snd_async_add_pcm_handler(&ahandler, pcm_handle, async_callback, &p_data)) < 0)
-//	{
-//		perror("Unable to register async handler\n");
-//
-//		snd_pcm_close(pcm_handle);
-//		return false;
-//	}
-
 	if(S9xInitAPU() == false)
 	{
 		perror("Apu failed\n");
@@ -324,8 +278,12 @@ void audio_deinit(void)
 {
 	S9xDeinitAPU();
 
-	play_state = false;
-	usleep(200000);
+	if(sound_buffer != NULL)
+	{
+		free(sound_buffer);
+		sound_buffer = NULL;
+		sound_buffer_size = 0;
+	}
 
 	/* stop pcm handle */
 	snd_pcm_close(pcm_handle);
