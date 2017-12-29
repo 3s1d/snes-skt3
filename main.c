@@ -71,6 +71,12 @@ int load_file_to_memory(const char *filename, uint8_t **result)
  */
 int main(int argc, char *argv[])
 {
+	if(argc < 2)
+	{
+		printf("Usage: %s path/to/rom\n", argv[0]);
+		exit(EXIT_SUCCESS);
+	}
+
 	/* settings */
 	memset(&Settings, 0, sizeof(Settings));
 	Settings.FrameTimePAL = 20000;
@@ -119,7 +125,8 @@ int main(int argc, char *argv[])
 
 	/* load cartridge */
 	uint8_t *rom;
-	size_t rom_size = load_file_to_memory("/run/media/mmcblk0p3/smk.smc", &rom);		//todo argv
+//	size_t rom_size = load_file_to_memory("/run/media/mmcblk0p3/smk.smc", &rom);
+	size_t rom_size = load_file_to_memory(argv[1], &rom);
 	if(rom == NULL || rom_size == 0)
 	{
 		perror("load file \n");
