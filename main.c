@@ -89,12 +89,6 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if(input_init() == false)
-	{
-		perror("input\n");
-		exit(EXIT_FAILURE);
-	}
-
 	/* init */
 	if(Init() == false)
 	{
@@ -137,6 +131,13 @@ int main(int argc, char *argv[])
 	if(LoadROM("") == false)
 	{
 		perror("loadrom\n");
+		exit(EXIT_FAILURE);
+	}
+
+	/* keys, will block until a deviceis connected */
+	if(input_init() == false)
+	{
+		perror("input\n");
 		exit(EXIT_FAILURE);
 	}
 

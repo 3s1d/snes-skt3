@@ -25,9 +25,6 @@
 #define HW_KEY_PLUS		4
 #define HW_KEY_MENU		6
 
-#define HW_KEY_PRESSED(v, k)	((v&(3<<(k)))>>(k) == 3)
-#define HW_KEY_RELEASED(v, k)	((v&(3<<(k)))>>(k) == 2)
-
 uint32_t hw_keys_poll(void);
 bool hw_key_init(void);
 void hw_key_deinit(void);

@@ -10,8 +10,11 @@
 #include <stdint.h>
 
 #include "hw_keys.h"
+#include "usb_keys.h"
 #include "../main.h"
-
+#include "../snes2010/snes9x.h"
+#include "../snes2010/controls.h"
+#include "input.h"
 
 
 bool input_init(void)
@@ -19,12 +22,36 @@ bool input_init(void)
 	if(hw_key_init() == false)
 		return false;
 
+	//note: this will block until a device is connected
+	if(usb_keys_init() == false)
+		return false;
+
+	S9xUnmapAllControls();
+
+	/* controller 1 */
+	S9xMapButton(KEY_JOYPAD_A, S9xGetCommandT("Joypad1 A"));
+	S9xMapButton(KEY_JOYPAD_B, S9xGetCommandT("Joypad1 B"));
+	S9xMapButton(KEY_JOYPAD_X, S9xGetCommandT("Joypad1 X"));
+	S9xMapButton(KEY_JOYPAD_Y, S9xGetCommandT("Joypad1 Y"));
+	S9xMapButton(KEY_JOYPAD_UP, S9xGetCommandT("Joypad1 Up"));
+	S9xMapButton(KEY_JOYPAD_DOWN, S9xGetCommandT("Joypad1 Down"));
+	S9xMapButton(KEY_JOYPAD_LEFT, S9xGetCommandT("Joypad1 Left"));
+	S9xMapButton(KEY_JOYPAD_RIGHT, S9xGetCommandT("Joypad1 Right"));
+	S9xMapButton(KEY_JOYPAD_L, S9xGetCommandT("Joypad1 L"));
+	S9xMapButton(KEY_JOYPAD_R, S9xGetCommandT("Joypad1 R"));
+	S9xMapButton(KEY_JOYPAD_START, S9xGetCommandT("Joypad1 Start"));
+	S9xMapButton(KEY_JOYPAD_SELECT, S9xGetCommandT("Joypad1 Select"));
+	S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0);
+
 	return true;
 }
 
 void input_deinit(void)
 {
 	hw_key_deinit();
+	usb_keys_deinit();	//requires initialized hw_keys
+
+	S9xUnmapAllControls();
 }
 
 void input_poll(void)
@@ -37,7 +64,11 @@ void input_poll(void)
 	if((cnt & 0x0000000F) == 0)
 	{
 		uint32_t hw_keys = hw_keys_poll();
-		if(HW_KEY_PRESSED(hw_keys, HW_KEY_MENU))
+		if(KEY_PRESSED(hw_keys, HW_KEY_MENU))
 			quit();
 	}
+
+	/*uint32_t usb_keys = */ usb_keys_poll();
+	//printf("k %08X\n", usb_keys);
+
 }

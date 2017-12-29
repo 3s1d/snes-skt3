@@ -36,8 +36,8 @@
 									<listOptionValue builtIn="false" value="RIGHTSHIFT_IS_SAR"/>
 									<listOptionValue builtIn="false" value="CORRECT_VRAM_READS"/>
 								</option>
-								<option id="gnu.c.compiler.option.warnings.allwarn.609722729" name="All warnings (-Wall)" superClass="gnu.c.compiler.option.warnings.allwarn" useByScannerDiscovery="false" value="false" valueType="boolean"/>
-								<option id="gnu.c.compiler.option.misc.other.1561737320" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -fno-strict-aliasing" valueType="string"/>
+								<option id="gnu.c.compiler.option.warnings.allwarn.609722729" name="All warnings (-Wall)" superClass="gnu.c.compiler.option.warnings.allwarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+								<option id="gnu.c.compiler.option.misc.other.1561737320" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-strict-aliasing" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1835099828" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.794045592" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
@@ -103,7 +103,7 @@
 									<listOptionValue builtIn="false" value="CORRECT_VRAM_READS"/>
 								</option>
 								<option id="gnu.c.compiler.option.warnings.allwarn.1603640322" name="All warnings (-Wall)" superClass="gnu.c.compiler.option.warnings.allwarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="gnu.c.compiler.option.misc.other.170705829" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -fno-strict-aliasing" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.170705829" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -fno-strict-aliasing" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.105892450" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1019314238" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
