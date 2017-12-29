@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 
 	/* load cartridge */
 	uint8_t *rom;
-	size_t rom_size = load_file_to_memory("/run/media/mmcblk0p3/smw.smc", &rom);		//todo argv
+	size_t rom_size = load_file_to_memory("/run/media/mmcblk0p3/smk.smc", &rom);		//todo argv
 	if(rom == NULL || rom_size == 0)
 	{
 		perror("load file \n");

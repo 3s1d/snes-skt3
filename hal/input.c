@@ -28,7 +28,7 @@ bool input_init(void)
 
 	S9xUnmapAllControls();
 
-	/* controller 1 */
+	/* controller 0+1 */
 	S9xMapButton(KEY_JOYPAD_A, S9xGetCommandT("Joypad1 A"));
 	S9xMapButton(KEY_JOYPAD_B, S9xGetCommandT("Joypad1 B"));
 	S9xMapButton(KEY_JOYPAD_X, S9xGetCommandT("Joypad1 X"));
@@ -42,6 +42,19 @@ bool input_init(void)
 	S9xMapButton(KEY_JOYPAD_START, S9xGetCommandT("Joypad1 Start"));
 	S9xMapButton(KEY_JOYPAD_SELECT, S9xGetCommandT("Joypad1 Select"));
 	S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0);
+	S9xMapButton(KEY_JOYPAD_A, S9xGetCommandT("Joypad2 A"));
+	S9xMapButton(KEY_JOYPAD_B, S9xGetCommandT("Joypad2 B"));
+	S9xMapButton(KEY_JOYPAD_X, S9xGetCommandT("Joypad2 X"));
+	S9xMapButton(KEY_JOYPAD_Y, S9xGetCommandT("Joypad2 Y"));
+	S9xMapButton(KEY_JOYPAD_UP, S9xGetCommandT("Joypad2 Up"));
+	S9xMapButton(KEY_JOYPAD_DOWN, S9xGetCommandT("Joypad2 Down"));
+	S9xMapButton(KEY_JOYPAD_LEFT, S9xGetCommandT("Joypad2 Left"));
+	S9xMapButton(KEY_JOYPAD_RIGHT, S9xGetCommandT("Joypad2 Right"));
+	S9xMapButton(KEY_JOYPAD_L, S9xGetCommandT("Joypad2 L"));
+	S9xMapButton(KEY_JOYPAD_R, S9xGetCommandT("Joypad2 R"));
+	S9xMapButton(KEY_JOYPAD_START, S9xGetCommandT("Joypad2 Start"));
+	S9xMapButton(KEY_JOYPAD_SELECT, S9xGetCommandT("Joypad2 Select"));
+	S9xSetController(1, CTL_JOYPAD, 1, 0, 0, 0);
 
 	return true;
 }

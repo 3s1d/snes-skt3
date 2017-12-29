@@ -67,9 +67,60 @@ void usb_key_eval(struct input_event *ev)
 		/* SELECT */
 		else if(ev->code == 296)
 			usb_joypad(0, SNES_SELECT_MASK, ev->value);
-
-		//todo keyboard p1+2
-
+		/*
+		 * Keyboard 0
+		 */
+		else if(ev->code == KEY_W)
+			usb_joypad(0, SNES_UP_MASK, ev->value);
+		else if(ev->code == KEY_S)
+			usb_joypad(0, SNES_DOWN_MASK, ev->value);
+		else if(ev->code == KEY_A)
+			usb_joypad(0, SNES_LEFT_MASK, ev->value);
+		else if(ev->code == KEY_D)
+			usb_joypad(0, SNES_RIGHT_MASK, ev->value);
+		else if(ev->code == KEY_M)
+			usb_joypad(0, SNES_B_MASK, ev->value);
+		else if(ev->code == KEY_K)
+			usb_joypad(0, SNES_A_MASK, ev->value);
+		else if(ev->code == KEY_J)
+			usb_joypad(0, SNES_Y_MASK, ev->value);
+		else if(ev->code == KEY_I)
+			usb_joypad(0, SNES_X_MASK, ev->value);
+		else if(ev->code == KEY_SPACE)
+			usb_joypad(0, SNES_SELECT_MASK, ev->value);
+		else if(ev->code == KEY_ENTER)
+			usb_joypad(0, SNES_START_MASK, ev->value);
+		else if(ev->code == KEY_U)
+			usb_joypad(0, SNES_TL_MASK, ev->value);
+		else if(ev->code == KEY_O)
+			usb_joypad(0, SNES_TR_MASK, ev->value);
+		/*
+		 * Keyboard 1
+		 */
+		else if(ev->code == KEY_UP)
+			usb_joypad(1, SNES_UP_MASK, ev->value);
+		else if(ev->code == KEY_DOWN)
+			usb_joypad(1, SNES_DOWN_MASK, ev->value);
+		else if(ev->code == KEY_LEFT)
+			usb_joypad(1, SNES_LEFT_MASK, ev->value);
+		else if(ev->code == KEY_RIGHT)
+			usb_joypad(1, SNES_RIGHT_MASK, ev->value);
+		else if(ev->code == KEY_KP1)
+			usb_joypad(1, SNES_B_MASK, ev->value);
+		else if(ev->code == KEY_KP5)
+			usb_joypad(1, SNES_A_MASK, ev->value);
+		else if(ev->code == KEY_KP4)
+			usb_joypad(1, SNES_Y_MASK, ev->value);
+		else if(ev->code == KEY_KP8)
+			usb_joypad(1, SNES_X_MASK, ev->value);
+		else if(ev->code == KEY_KP0)
+			usb_joypad(1, SNES_SELECT_MASK, ev->value);
+		else if(ev->code == KEY_KPENTER)
+			usb_joypad(1, SNES_START_MASK, ev->value);
+		else if(ev->code == KEY_KP7)
+			usb_joypad(1, SNES_TL_MASK, ev->value);
+		else if(ev->code == KEY_KP9)
+			usb_joypad(1, SNES_TR_MASK, ev->value);
 	}
 	else if(ev->type == 3)
 	{
@@ -148,14 +199,12 @@ uint32_t usb_keys_poll(void)
 	if(fd_usb0 > -1 && (rd=read(fd_usb0, ev, sizeof(ev))) > 0)
 	{
 		for(int i =0; i< rd/sizeof(struct input_event); i++)
-		{
 			usb_key_eval(&ev[i]);
-			//printf("type%d code%d state%i\n", ev[i].type, ev[i].code, ev[i].value);
-		}
 	}
 	if(fd_usb1 > -1 && (rd=read(fd_usb1, ev, sizeof(ev))) > 0)
 	{
-		//printf("rd1 %d\n", rd);
+		for(int i =0; i< rd/sizeof(struct input_event); i++)
+			usb_key_eval(&ev[i]);
 	}
 
 	return 0;
