@@ -2,7 +2,8 @@
 SNES Emulator for the Skytraxx 3.0
 
 # Requirements
-Skytraxx 3.0 with v3.0.11 or later installed
+- Skytraxx 3.0 with v3.0.11 or later installed. 
+- Joypad or keyboard
 
 # Usage
 Create the folder 'app' on the sd-card and place the 'snes' binary (from Release folder) into it. Create an folder 'app/snes.data' and place ROM cartridge into it.
