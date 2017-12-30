@@ -11,5 +11,5 @@ For keyboard layout see [usb_keys.c](https://github.com/3s1d/snes-skt3/blob/mast
 
 # Disclaimer
 - Do not violate any copyrights.
-- Don't ask me where to get the ROM 
+- Don't ask me where to get the ROMs from. 
 - ... 
