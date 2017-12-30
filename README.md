@@ -6,7 +6,7 @@ SNES Emulator for the Skytraxx 3.0
 - Joypad or keyboard
 
 # Usage
-Create the folder 'app' on the sd-card and place the 'snes' binary (from Release folder) into it. Create an folder 'app/snes.data' and place ROM cartridge into it.
+Create the folder 'app' on the sd-card and place the 'snes' binary (from Release folder) into it. Create an folder 'app/snes.data' and place ROM cartridge(s) into it.
 
 # Disclaimer
 - Do not violate any copyrights.
