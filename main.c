@@ -129,6 +129,8 @@ int main(int argc, char *argv[])
 	size_t rom_size = load_file_to_memory(argv[1], &rom);
 	if(rom == NULL || rom_size == 0)
 	{
+		fb_greeter(false);
+
 		perror("load file \n");
 		exit(EXIT_FAILURE);
 	}
@@ -137,8 +139,15 @@ int main(int argc, char *argv[])
 
 	if(LoadROM("") == false)
 	{
+		fb_greeter(false);
+
+		sleep(2);
 		perror("loadrom\n");
 		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		fb_greeter(true);
 	}
 
 	/* keys, will block until a deviceis connected */
@@ -147,6 +156,8 @@ int main(int argc, char *argv[])
 		perror("input\n");
 		exit(EXIT_FAILURE);
 	}
+
+	printf("rock'n'roll\n");
 
 	/* main loop */
 	running = true;
@@ -161,6 +172,7 @@ int main(int argc, char *argv[])
 		//S9xReportButton(k1P_A_Button, (key_is_pressed ? true : false));
 	}
 
+	fb_bye();
 	Deinit();
 	free(GFX.Screen);
 	S9xGraphicsDeinit();

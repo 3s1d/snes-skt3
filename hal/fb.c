@@ -72,6 +72,92 @@ void fb_deinit(void)
 	close(fb_fd);
 }
 
+void fb_greeter(bool success)
+{
+	if(fb_p == NULL)
+		return;
+
+	/* image for drawing */
+	cairo_surface_t *surface_img = cairo_image_surface_create(CAIRO_FORMAT_RGB16_565, fb_vinfo.xres, fb_vinfo.yres);
+	cairo_t *cr_display = cairo_create(surface_img);
+	cairo_surface_destroy(surface_img);
+	if(cairo_status(cr_display) != CAIRO_STATUS_SUCCESS)
+		return;
+
+	cairo_select_font_face(cr_display, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size(cr_display, 19);
+	cairo_set_source_rgb(cr_display, 1, 1, 1);
+
+	if(success)
+	{
+		cairo_move_to(cr_display, 112, 100);
+		cairo_show_text(cr_display, "ROM loaded!");
+		cairo_move_to(cr_display, 112, 135);
+		cairo_show_text(cr_display, "Waiting for");
+		cairo_move_to(cr_display, 112, 135+25);
+		cairo_show_text(cr_display, "joypad or keyboard");
+
+		cairo_move_to(cr_display, 30, 268);
+		cairo_show_text(cr_display, "EXIT");
+
+		cairo_move_to(cr_display, 155, 268);
+		cairo_show_text(cr_display, "VOL -");
+		cairo_move_to(cr_display, 270, 268);
+		cairo_show_text(cr_display, "VOL +");
+
+	}
+	else
+	{
+		cairo_move_to(cr_display, 140, 100);
+		cairo_show_text(cr_display, "ROM load failed!");
+	}
+
+
+	/* copy to frame buffer */
+	uint16_t *surface_ptr = (uint16_t *) cairo_image_surface_get_data(cairo_get_target(cr_display));
+	int width = cairo_image_surface_get_width(cairo_get_target(cr_display));
+	for(int l=0; l<fb_vinfo.yres; l++)
+	{
+		int location = (fb_vinfo.xoffset) * (fb_vinfo.bits_per_pixel/8) +
+				(l+fb_vinfo.yoffset) * fb_finfo.line_length;
+		memcpy(fb_p + location, &surface_ptr[l*width], fb_vinfo.xres*sizeof(uint16_t));
+	}
+
+	cairo_destroy(cr_display);
+}
+
+void fb_bye(void)
+{
+	if(fb_p == NULL)
+		return;
+
+	/* image for drawing */
+	cairo_surface_t *surface_img = cairo_image_surface_create(CAIRO_FORMAT_RGB16_565, fb_vinfo.xres, fb_vinfo.yres);
+	cairo_t *cr_display = cairo_create(surface_img);
+	cairo_surface_destroy(surface_img);
+	if(cairo_status(cr_display) != CAIRO_STATUS_SUCCESS)
+		return;
+
+	cairo_select_font_face(cr_display, "DejaVuSans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size(cr_display, 19);
+	cairo_set_source_rgb(cr_display, 1, 1, 1);
+
+	cairo_move_to(cr_display, 210, 130);
+	cairo_show_text(cr_display, "Bye!");
+
+	/* copy to frame buffer */
+	uint16_t *surface_ptr = (uint16_t *) cairo_image_surface_get_data(cairo_get_target(cr_display));
+	int width = cairo_image_surface_get_width(cairo_get_target(cr_display));
+	for(int l=0; l<fb_vinfo.yres; l++)
+	{
+		int location = (fb_vinfo.xoffset) * (fb_vinfo.bits_per_pixel/8) +
+				(l+fb_vinfo.yoffset) * fb_finfo.line_length;
+		memcpy(fb_p + location, &surface_ptr[l*width], fb_vinfo.xres*sizeof(uint16_t));
+	}
+
+	cairo_destroy(cr_display);
+}
+
 
 /* screen */
 void S9xDeinitUpdate(int width, int height)

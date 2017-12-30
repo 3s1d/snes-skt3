@@ -14,6 +14,7 @@
 #include "../main.h"
 #include "../snes2010/snes9x.h"
 #include "../snes2010/controls.h"
+#include "sys/volume.h"
 #include "input.h"
 
 
@@ -79,6 +80,10 @@ void input_poll(void)
 		uint32_t hw_keys = hw_keys_poll();
 		if(KEY_PRESSED(hw_keys, HW_KEY_MENU))
 			quit();
+		if(KEY_PRESSED(hw_keys, HW_KEY_PLUS))
+			volume_chg(false);
+		if(KEY_PRESSED(hw_keys, HW_KEY_MINUS))
+			volume_chg(true);
 	}
 
 	/*uint32_t usb_keys = */ usb_keys_poll();

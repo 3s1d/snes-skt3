@@ -11,4 +11,7 @@
 int fb_init(void);
 void fb_deinit(void);
 
+void fb_greeter(bool success);
+void fb_bye(void);
+
 #endif /* FB_H_ */
